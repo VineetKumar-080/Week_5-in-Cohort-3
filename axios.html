@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.6/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="posts"></div>
+  <script>
+    async function getRecentPost() {
+      console.log("before sending request");
+
+      // Fixed typo in axios and removed space in URL
+      const response = await axios.get("https://jsonplaceholder.typicode.com/posts/2");
+
+      // Fixed the id from "post" to "posts"
+      document.getElementById("posts").innerHTML = response.data.body;
+
+      console.log("request has been processed");
+    }
+
+    getRecentPost();
+  </script>
+</body>
+
+</html>
