@@ -2,80 +2,40 @@ const express = require("express")
 
 const app = express();
 
-/*
+let requestCount = 0;
 
-parseFloat convert a string into a floating-point number
+// first handler(Middleware), In this we have to specify req,res,next, Because this is middleware and it should contain req,res and next for the next middleware(function)
 
-we can also use parseInt, it will help to convert a string into an integer (a whole number)
+function requestIncreaser(req,res,next){
+    requestCount = requestCount +  1;
+    console.log(`Total number of request = ${requestCount}`);
+    next();
+}
 
-*/
-app.get("/sum", function(req,res){
-    const a = parseFloat(req.query.a);
-    const b = parseFloat(req.query.b);
 
-    //below is the another method by which we can pass the arguments without using "?" query. instead we can use params syntax which support
-    // =>  /:/:b
-/*
-    app.get("/sum/:a/:b", function(req,res){
-        const a = parseFloat(req.params.a);
-        const b = parseFloat(req.params.b);
 
-        we can also use parseInt (for whole number)
-    */
+// In the last handler we mostly use req,res, but in first handler (middleware) we should (write req,res,next)
 
-    if(isNaN(a)|| isNaN(b)){
-        return res.status(400).json({
-            error: "Both 'a' and 'b' are required"
-        })
-    }
+function realSumHandler(req,res){
+    const a = parseInt(req.query.a);
+    const b = parseInt(req.query.b);
 
     res.json({
         ans: a + b
     })
-})
-app.get("/multiply", function(req,res){
-    const a = parseFloat(req.query.a);
-    const b = parseFloat(req.query.b);
+}
 
-    if(isNaN(a)|| isNaN(b)){
-        return res.status(400).json({
-            error: "Both 'a' and 'b' are required"
-        })
-    }
+// app.use(requestIncreaser)
+// we write app.use, when we want to apply the middleware on all the routes below that specified line.
 
+app.get("/sum",requestIncreaser,realSumHandler)
+
+app.get("/multiply",requestIncreaser,realSumHandler)
+
+app.get("/admin", function(req,res){
     res.json({
-        ans: a * b
-    })
-})
-app.get("/divide", function(req,res){
-    const a = parseFloat(req.query.a);
-    const b = parseFloat(req.query.b);
-
-    if(isNaN(a)|| isNaN(b)){
-        return res.status(400).json({
-            error: "Both 'a' and 'b' are required"
-        })
-    }
-    res.json({
-        ans: a/b
-    })
-})
-app.get("/subtract", function(req,res){
-    const a = parseFloat(req.query.a);
-    const b = parseFloat(req.query.b);
-
-    if(isNaN(a)|| isNaN(b)){
-        return res.status(400).json({
-            error: "Both 'a' and 'b' are required"
-        })
-    }
-
-    res.json({
-        ans: a - b
+        message: `Total number of request on the server are ${requestCount}`
     })
 })
 
-app.listen(3000, function(){
-    console.log("Server is running on port 3000");
-    
-})
+app.listen(3000);
